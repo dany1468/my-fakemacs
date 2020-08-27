@@ -1,8 +1,8 @@
 ﻿# -*- mode: python; coding: utf-8-with-signature-dos -*-
 
-##                               nickname: Fakeymacs
+##                             nickname: Fakeymacs Light
 ##
-## Windows の操作を Emacs のキーバインドで行うための設定（Keyhac版）ver.20200820_01
+## Windows の操作を Emacs のキーバインドで行うための設定 Light（Keyhac版）ver.20200820_01
 ##
 
 # このスクリプトは、Keyhac for Windows ver 1.82 以降で動作します。
@@ -60,12 +60,6 @@
 #     （間違って日本語入力をしてしまった時のキー操作を想定しての対策）
 # ・Emacs日本語入力モードの使用を有効にした際、emacs_ime_mode_balloon_message 変数の
 #   設定でバルーンメッセージとして表示する文字列を指定できる。
-# ・use_emacs_shift_mode 変数の設定により、Emacsシフトモードを使うかどうかを指定できる。
-#   Emacsシフトモードを使う場合は次の動きとなる。
-#   ・C-[a-z]キーを Shiftキーと一緒に押した時は、Shiftキーをとったキー（C-[a-z]）が
-#     Windows に入力される。
-#   ・A-[a-z]キーを Shiftキーと一緒に押した時は、Shiftキーをとったキー（A-[a-z]）が
-#     Windows に入力される。
 #
 # ＜Emacsキーバインド設定を有効にしたアプリケーションソフトでの動き＞
 # ・use_ctrl_i_as_tab 変数の設定により、C-iキーを Tabキーとして使うかどうかを指定できる。
@@ -98,34 +92,7 @@
 #   使うかを指定できる。
 # ・use_alt_shift_digit_key_for_f13_to_f24 の設定により、F13 から F24 を Alt+Shift+数字
 #   キー列として使うかを指定できる。
-# ・other_window_key 変数に設定したキーにより、表示しているウィンドウの中で、一番最近
-#   までフォーカスがあったウィンドウに移動する。NTEmacs の機能やランチャーの機能から
-#   Windows アプリケーションソフトを起動した際に、起動元のアプリケーションソフトに戻る
-#   のに便利。この機能は Ctl-x o にも割り当てているが、こちらは Emacs のキーバインドを
-#   適用したアプリケーションソフトのみで有効となる。
-# ・clipboardList_key 変数に設定したキーにより、クリップボードリストが起動する。
-#   （C-f、C-b でリストの変更、C-n、C-p でリスト内を移動し、Enter で確定する。
-#     C-s、C-r で検索も可能。migemo 辞書を登録してあれば、検索文字を大文字で始める
-#     ことで migemo 検索も可能。Emacsキーバインドを適用しないアプリケーションソフト
-#     でもクリップボードリストは起動し、選択した項目を Enter で確定することで、
-#     クリップボードへの格納（テキストの貼り付けではない）が行われる。）
-# ・lancherList_key 変数に設定したキーにより、ランチャーリストが起動する。
-#   （全てのアプリケーションソフトで利用可能。操作方法は、クリップボードリストと同じ。）
-# ・クリップボードリストやランチャーリストのリストボックス内では、基本、Altキーを
-#   Ctrlキーと同じキーとして扱っている。（C-v と A-v の置き換えのみ行っていない。）
 # ・window_switching_key 変数に設定したキーにより、アクティブウィンドウの切り替えが行われる。
-# ・マルチディスプレイを利用している際に、window_movement_key_for_displays 変数に設定した
-#   キーにより、アクティブウィンドウのディスプレイ間の移動が行われる。
-# ・window_minimize_key 変数に設定したキーにより、ウィンドウの最小化、リストアが行われる。
-# ・desktop_switching_key 変数に設定したキーにより、仮想デスクトップの切り替えが行われる。
-#   （仮想デスクトップの利用については、次のページを参照ください。
-#     ・http://pc-karuma.net/windows-10-virtual-desktops/
-#     ・http://pc-karuma.net/windows-10-virtual-desktop-show-all-window-app/
-#     仮想デスクトップ切替時のアニメーションを止める方法は次のページを参照ください。
-#     ・http://www.jw7.org/2015/11/03/windows10_virtualdesktop_animation_off/ ）
-# ・window_movement_key_for_desktops 変数に設定したキーにより、アクティブウィンドウの
-#   仮想デスクトップ間の移動が行われる。
-#   （本機能を利用する場合は、Microsoft Store から SylphyHorn をインストールしてください。）
 # ・word_register_key 変数に設定したキーにより、IME の「単語登録」プログラムの起動が
 #   行われる。
 
@@ -136,7 +103,6 @@ import re
 import fnmatch
 import copy
 import types
-import datetime
 import ctypes
 
 import keyhac_keymap
@@ -206,13 +172,6 @@ def configure(keymap):
     fc.use_old_Microsoft_IME = True
     fc.use_new_Microsoft_IME = False
     fc.use_Google_IME = False
-
-    # 追加機能のオプションの設定
-    fc.use_clipboardList = True
-    fc.use_lancherList = True
-    fc.use_edit_mode = False
-    fc.use_real_emacs = False
-    fc.use_change_keyboard = False
 
     # 個人設定ファイルのセクション [section-options] を読み込んで実行する
     exec(read_config_personal("[section-options]"), dict(globals(), **locals()))
@@ -341,7 +300,7 @@ def configure(keymap):
 
     # スクロールに使うキーの組み合わせ（Up、Down の順）を指定する
     # fc.scroll_key = None # PageUp、PageDownキーのみを利用する
-    fc.scroll_key = ["M-v", "C-v"]
+    fc.scroll_key = None
 
     # Emacs日本語入力モードを使うかどうかを指定する（True: 使う、False: 使わない）
     fc.use_emacs_ime_mode = True
@@ -349,9 +308,6 @@ def configure(keymap):
     # Emacs日本語入力モードが有効なときに表示するバルーンメッセージを指定する
     # fc.emacs_ime_mode_balloon_message = None
     fc.emacs_ime_mode_balloon_message = "▲"
-
-    # Emacsシフトモードを使うかどうかを指定する（True: 使う、False: 使わない）
-    fc.use_emacs_shift_mode = False
 
     # IME をトグルで切り替えるキーを指定する（複数指定可）
     fc.toggle_input_method_key = []
@@ -472,15 +428,6 @@ def configure(keymap):
     # F13 から F24 を Alt-Shift+数字キー列として使うかを指定する（True: 使う、False: 使わない）
     fc.use_alt_shift_digit_key_for_f13_to_f24 = False
 
-    # 表示しているウィンドウの中で、一番最近までフォーカスがあったウィンドウに移動するキーを指定する
-    fc.other_window_key = "A-o"
-
-    # クリップボードリストを起動するキーを指定する
-    fc.clipboardList_key = "A-y"
-
-    # ランチャーリストを起動するキーを指定する
-    fc.lancherList_key = "A-l"
-
     # アクティブウィンドウを切り替えるキーの組み合わせ（前、後 の順）を指定する（複数指定可）
     # （内部で A-Tab による切り替えを行っているため、設定するキーは Altキーとの組み合わせとしてください）
     # （切り替え画面が起動した後は、A-b、A-f、A-p、A-n でウィンドウを切り替えられるように設定している他、
@@ -489,48 +436,6 @@ def configure(keymap):
     # （デフォルトキーは、["A-S-Tab", "A-Tab"]）
     fc.window_switching_key = []
     # fc.window_switching_key += [["A-p", "A-n"]]
-
-    # アクティブウィンドウをディスプレイ間で移動するキーの組み合わせ（前、後 の順）を指定する（複数指定可）
-    # （デフォルトキーは、["W-S-Left", "W-S-Right"]）
-    fc.window_movement_key_for_displays = []
-    fc.window_movement_key_for_displays += [[None, "W-o"]]
-
-    # ウィンドウを最小化、リストアするキーの組み合わせ（リストア、最小化 の順）を指定する（複数指定可）
-    fc.window_minimize_key = []
-    fc.window_minimize_key += [["A-S-m", "A-m"]]
-
-    # 仮想デスクトップを切り替えるキーの組み合わせ（前、後 の順）を指定する（複数指定可）
-    # （仮想デスクトップを切り替えた際にフォーカスのあるウィンドウを適切に処理するため、設定するキーは
-    #   Winキーとの組み合わせとしてください）
-    # （デフォルトキーは、["W-C-Left", "W-C-Right"]）
-    fc.desktop_switching_key = []
-    fc.desktop_switching_key += [["W-b", "W-f"]]
-    # fc.desktop_switching_key += [["W-Left", "W-Right"]]
-
-    # アクティブウィンドウを仮想デスクトップ間で移動するキーの組み合わせ（前、後 の順）を指定する（複数指定可）
-    # （本機能を利用する場合は、Microsoft Store から SylphyHorn をインストールしてください）
-    # （デフォルトキーは、["W-C-A-Left", "W-C-A-Right"] です。この設定は変更しないでください）
-    # （仮想デスクトップ切り替え時の通知を ON にすると処理が重くなります。代わりに、トレイアイコンに
-    #   デスクトップ番号を表示する機能を ON にすると良いようです。）
-    fc.window_movement_key_for_desktops = []
-    # fc.window_movement_key_for_desktops += [["W-p", "W-n"]]
-    # fc.window_movement_key_for_desktops += [["W-Up", "W-Down"]]
-
-    # ウィンドウ操作（other_window、restore_window など）の対象としたくないアプリケーションソフトの
-    # “クラス名称”を指定する
-    # （re.match 関数（先頭からのマッチ）の正規表現に「|」を使って繋げて指定してください。
-    #   完全マッチとするためには $ の指定が必要です。）
-    fc.window_operation_exclusion_class = r"Progman$"
-
-    # ウィンドウ操作（other_window、restore_window など）の対象としたくないアプリケーションソフトの
-    # “プロセス名称”を指定する
-    # （re.match 関数（先頭からのマッチ）の正規表現に「|」を使って繋げて指定してください。
-    #   完全マッチとするためには $ の指定が必要です。）
-    fc.window_operation_exclusion_process = r"RocketDock\.exe$"  # サンプルとして RocketDock.exe を登録
-
-    # shell_command 関数で起動するアプリケーションソフトを指定する
-    # （パスが通っていない場所にあるコマンドは、絶対パスで指定してください）
-    fc.command_name = r"cmd.exe"
 
     # コマンドのリピート回数の最大値を指定する
     fc.repeat_max = 1024
@@ -570,9 +475,6 @@ def configure(keymap):
             fakeymacs.ime_cancel = False
 
         if is_task_switching_window(window):
-            return False
-
-        if is_list_window(window):
             return False
 
         if window.getClassName() in fc.emacs_target_class:
@@ -906,13 +808,6 @@ def configure(keymap):
     def switch_to_buffer():
         self_insert_command("C-Tab")()
 
-    def other_window():
-        window_list = getWindowList()
-        for wnd in window_list[1:]:
-            if not wnd.isMinimized():
-                wnd.getLastActivePopup().setForeground()
-                break
-
     ##################################################
     ## 文字列検索 / 置換
     ##################################################
@@ -1056,20 +951,6 @@ def configure(keymap):
         else:
             fakeymacs.repeat_counter = number
             fakeymacs.is_digit_argument = True
-
-    def shell_command():
-        def popCommandWindow(wnd, command):
-            if wnd.isVisible() and not wnd.getOwner() and wnd.getProcessName() == command:
-                popWindow(wnd)()
-                fakeymacs.is_executing_command = True
-                return False
-            return True
-
-        fakeymacs.is_executing_command = False
-        Window.enum(popCommandWindow, os.path.basename(fc.command_name))
-
-        if not fakeymacs.is_executing_command:
-            keymap.ShellExecuteCommand(None, fc.command_name, "", "")()
 
     ##################################################
     ## 共通関数
@@ -1399,15 +1280,6 @@ def configure(keymap):
         define_key(keymap_emacs, "C-q W-"   + s_vkey, reset_search(reset_undo(reset_counter(reset_mark(self_insert_command("W-"   + s_vkey))))))
         define_key(keymap_emacs, "C-q W-S-" + s_vkey, reset_search(reset_undo(reset_counter(reset_mark(self_insert_command("W-S-" + s_vkey))))))
 
-    ## C-S-[a-z] -> C-[a-z]、A-S-[a-z] -> A-[a-z] の置き換え設定（Emacsシフトモードの設定）
-    if fc.use_emacs_shift_mode:
-        for vkey in range(VK_A, VK_Z + 1):
-            s_vkey = "({})".format(vkey)
-            define_key(keymap_emacs, "C-S-" + s_vkey, reset_search(reset_undo(reset_counter(reset_mark(self_insert_command("C-" + s_vkey))))))
-            define_key(keymap_emacs, "A-S-" + s_vkey, reset_search(reset_undo(reset_counter(reset_mark(self_insert_command("A-" + s_vkey))))))
-            define_key(keymap_ime,   "C-S-" + s_vkey, self_insert_command("C-" + s_vkey))
-            define_key(keymap_ime,   "A-S-" + s_vkey, self_insert_command("A-" + s_vkey))
-
     ## Escキーの設定
     define_key(keymap_emacs, "C-OpenBracket C-OpenBracket", reset_undo(reset_counter(self_insert_command("Esc"))))
     if fc.use_esc_as_meta:
@@ -1446,15 +1318,14 @@ def configure(keymap):
     define_key(keymap_emacs, "M-S-Period", reset_search(reset_undo(reset_counter(mark(end_of_buffer, True)))))
     define_key(keymap_emacs, "C-l",        reset_search(reset_undo(reset_counter(recenter))))
 
-    if not fc.use_emacs_shift_mode:
-        define_key(keymap_emacs, "C-S-b", reset_search(reset_undo(reset_counter(mark2(repeat(backward_char), False)))))
-        define_key(keymap_emacs, "C-S-f", reset_search(reset_undo(reset_counter(mark2(repeat(forward_char), True)))))
-        define_key(keymap_emacs, "M-S-b", reset_search(reset_undo(reset_counter(mark2(repeat(backward_word), False)))))
-        define_key(keymap_emacs, "M-S-f", reset_search(reset_undo(reset_counter(mark2(repeat(forward_word), True)))))
-        define_key(keymap_emacs, "C-S-p", reset_search(reset_undo(reset_counter(mark2(repeat(previous_line), False)))))
-        define_key(keymap_emacs, "C-S-n", reset_search(reset_undo(reset_counter(mark2(repeat(next_line), True)))))
-        define_key(keymap_emacs, "C-S-a", reset_search(reset_undo(reset_counter(mark2(move_beginning_of_line, False)))))
-        define_key(keymap_emacs, "C-S-e", reset_search(reset_undo(reset_counter(mark2(move_end_of_line, True)))))
+    define_key(keymap_emacs, "C-S-b", reset_search(reset_undo(reset_counter(mark2(repeat(backward_char), False)))))
+    define_key(keymap_emacs, "C-S-f", reset_search(reset_undo(reset_counter(mark2(repeat(forward_char), True)))))
+    define_key(keymap_emacs, "M-S-b", reset_search(reset_undo(reset_counter(mark2(repeat(backward_word), False)))))
+    define_key(keymap_emacs, "M-S-f", reset_search(reset_undo(reset_counter(mark2(repeat(forward_word), True)))))
+    define_key(keymap_emacs, "C-S-p", reset_search(reset_undo(reset_counter(mark2(repeat(previous_line), False)))))
+    define_key(keymap_emacs, "C-S-n", reset_search(reset_undo(reset_counter(mark2(repeat(next_line), True)))))
+    define_key(keymap_emacs, "C-S-a", reset_search(reset_undo(reset_counter(mark2(move_beginning_of_line, False)))))
+    define_key(keymap_emacs, "C-S-e", reset_search(reset_undo(reset_counter(mark2(move_end_of_line, True)))))
 
     define_key(keymap_emacs, "Left",     reset_search(reset_undo(reset_counter(mark(repeat(backward_char), False)))))
     define_key(keymap_emacs, "Right",    reset_search(reset_undo(reset_counter(mark(repeat(forward_char), True)))))
@@ -1488,7 +1359,7 @@ def configure(keymap):
     define_key(keymap_emacs, "M-Delete", reset_search(reset_undo(reset_counter(reset_mark(repeat3(backward_kill_word))))))
     define_key(keymap_emacs, "M-d",      reset_search(reset_undo(reset_counter(reset_mark(repeat3(kill_word))))))
     define_key(keymap_emacs, "C-k",      reset_search(reset_undo(reset_counter(reset_mark(repeat3(kill_line))))))
-    define_key(keymap_emacs, "C-w",      reset_search(reset_undo(reset_counter(reset_mark(kill_region)))))
+    #define_key(keymap_emacs, "C-w",      reset_search(reset_undo(reset_counter(reset_mark(kill_region)))))
     define_key(keymap_emacs, "M-w",      reset_search(reset_undo(reset_counter(reset_mark(kill_ring_save)))))
     define_key(keymap_emacs, "C-y",      reset_search(reset_undo(reset_counter(reset_mark(repeat(yank))))))
     define_key(keymap_emacs, "C-Slash",  reset_search(reset_counter(reset_mark(undo))))
@@ -1523,7 +1394,6 @@ def configure(keymap):
     ## 「バッファ / ウィンドウ操作」のキー設定
     define_key(keymap_emacs, "Ctl-x k", reset_search(reset_undo(reset_counter(reset_mark(kill_buffer)))))
     define_key(keymap_emacs, "Ctl-x b", reset_search(reset_undo(reset_counter(reset_mark(switch_to_buffer)))))
-    define_key(keymap_emacs, "Ctl-x o", reset_search(reset_undo(reset_counter(reset_mark(other_window)))))
     define_key(keymap_emacs, "M-k",     reset_search(reset_undo(reset_counter(reset_mark(kill_buffer)))))
 
     ## 「文字列検索 / 置換」のキー設定
@@ -1549,7 +1419,6 @@ def configure(keymap):
     define_key(keymap_emacs, "Tab",       reset_undo(reset_counter(reset_mark(repeat(indent_for_tab_command)))))
     define_key(keymap_emacs, "C-g",       reset_search(reset_counter(reset_mark(keyboard_quit))))
     define_key(keymap_emacs, "Ctl-x C-c", reset_search(reset_undo(reset_counter(reset_mark(kill_emacs)))))
-    define_key(keymap_emacs, "M-S-1",     reset_search(reset_undo(reset_counter(reset_mark(shell_command)))))
 
     if fc.use_ctrl_i_as_tab:
         define_key(keymap_emacs, "C-i", reset_undo(reset_counter(reset_mark(repeat(indent_for_tab_command)))))
@@ -1734,13 +1603,6 @@ def configure(keymap):
             define_key(keymap_ei, "A-"   + s_vkey, ei_record_func(self_insert_command("A-"   + s_vkey)))
             define_key(keymap_ei, "A-S-" + s_vkey, ei_record_func(self_insert_command("A-S-" + s_vkey)))
 
-        ## C-S-[a-z] -> C-[a-z]、A-S-[a-z] -> A-[a-z] の置き換え設定（Emacsシフトモードの設定）
-        if fc.use_emacs_shift_mode:
-            for vkey in range(VK_A, VK_Z + 1):
-                s_vkey = "({})".format(vkey)
-                define_key(keymap_ei, "C-S-" + s_vkey, ei_record_func(self_insert_command("C-" + s_vkey)))
-                define_key(keymap_ei, "A-S-" + s_vkey, ei_record_func(self_insert_command("A-" + s_vkey)))
-
         ## 「IME の切り替え」のキー設定
         define_key(keymap_ei, "(243)",  ei_disable_input_method)
         define_key(keymap_ei, "(244)",  ei_disable_input_method)
@@ -1851,122 +1713,20 @@ def configure(keymap):
     ## ウィンドウ操作（デスクトップ用）
     ##################################################
 
-    def popWindow(wnd):
-        def _func():
-            try:
-                if wnd.isMinimized():
-                    wnd.restore()
-                delay() # ウィンドウフォーカスが適切に移動しない場合があることの対策
-                wnd.getLastActivePopup().setForeground()
-            except:
-                print("選択したウィンドウは存在しませんでした")
-        return _func
-
-    def getWindowList():
-        def makeWindowList(wnd, arg):
-            if wnd.isVisible() and not wnd.getOwner():
-
-                class_name = wnd.getClassName()
-                title = wnd.getText()
-
-                if class_name == "Emacs" or title != "":
-                    if not re.match(fc.window_operation_exclusion_class, class_name):
-                        process_name = wnd.getProcessName()
-                        if not re.match(fc.window_operation_exclusion_process, process_name):
-                            # 表示されていないストアアプリ（「設定」等）が window_list に登録されるのを抑制する
-                            if class_name == "Windows.UI.Core.CoreWindow":
-                                if title in window_dict:
-                                    if window_dict[title] in window_list:
-                                        window_list.remove(window_dict[title])
-                                else:
-                                    window_dict[title] = wnd
-
-                            elif class_name == "ApplicationFrameWindow":
-                                if title not in window_dict:
-                                    window_dict[title] = wnd
-                                    window_list.append(wnd)
-                            else:
-                                window_list.append(wnd)
-            return True
-
-        window_dict = {}
-        window_list = []
-        Window.enum(makeWindowList, None)
-
-        return window_list
-
     def previous_window():
         self_insert_command("A-S-Tab")()
 
     def next_window():
         self_insert_command("A-Tab")()
 
-    def move_window_to_previous_display():
-        self_insert_command("W-S-Left")()
-
-    def move_window_to_next_display():
-        self_insert_command("W-S-Right")()
-
-    def minimize_window():
-        wnd = keymap.getTopLevelWindow()
-        if wnd and not wnd.isMinimized():
-            wnd.minimize()
-
-    def restore_window():
-        window_list = getWindowList()
-
-        # ウィンドウのリストアが最小化した順番の逆順にならないときは次の行を無効化
-        # （コメント化）してください
-        window_list.reverse()
-
-        for wnd in window_list:
-            if wnd.isMinimized():
-                wnd.restore()
-                break
-
-    def previous_desktop():
-        self_insert_command("W-C-Left")()
-
-    def next_desktop():
-        self_insert_command("W-C-Right")()
-
-    def move_window_to_previous_desktop():
-        self_insert_command("W-C-A-Left")()
-
-    def move_window_to_next_desktop():
-        self_insert_command("W-C-A-Right")()
-
     ##################################################
     ## キーバインド（デスクトップ用）
     ##################################################
-
-    # 表示しているウィンドウの中で、一番最近までフォーカスがあったウィンドウに移動
-    define_key(keymap_global, fc.other_window_key, reset_search(reset_undo(reset_counter(reset_mark(other_window)))))
 
     # アクティブウィンドウの切り替え
     for previous_key, next_key in fc.window_switching_key:
         define_key(keymap_global, previous_key, reset_search(reset_undo(reset_counter(reset_mark(previous_window)))))
         define_key(keymap_global, next_key,     reset_search(reset_undo(reset_counter(reset_mark(next_window)))))
-
-    # アクティブウィンドウのディスプレイ間移動
-    for previous_key, next_key in fc.window_movement_key_for_displays:
-        define_key(keymap_global, previous_key, move_window_to_previous_display)
-        define_key(keymap_global, next_key,     move_window_to_next_display)
-
-    # ウィンドウの最小化、リストア
-    for restore_key, minimize_key in fc.window_minimize_key:
-        define_key(keymap_global, restore_key,  reset_search(reset_undo(reset_counter(reset_mark(restore_window)))))
-        define_key(keymap_global, minimize_key, reset_search(reset_undo(reset_counter(reset_mark(minimize_window)))))
-
-    # 仮想デスクトップの切り替え
-    for previous_key, next_key in fc.desktop_switching_key:
-        define_key(keymap_global, previous_key, reset_search(reset_undo(reset_counter(reset_mark(previous_desktop)))))
-        define_key(keymap_global, next_key,     reset_search(reset_undo(reset_counter(reset_mark(next_desktop)))))
-
-    # アクティブウィンドウ仮想デスクトップの切り替え
-    for previous_key, next_key in fc.window_movement_key_for_desktops:
-        define_key(keymap_global, previous_key, move_window_to_previous_desktop)
-        define_key(keymap_global, next_key,     move_window_to_next_desktop)
 
     # IME の「単語登録」プログラムの起動
     define_key(keymap_global, fc.word_register_key, keymap.ShellExecuteCommand(None, fc.word_register_name, fc.word_register_param, ""))
@@ -1993,409 +1753,5 @@ def configure(keymap):
     define_key(keymap_tsw, "A-n", next_window)
     define_key(keymap_tsw, "A-g", self_insert_command("A-Esc"))
 
-
-    ###########################################################################
-    ## リストウィンドウの設定
-    ###########################################################################
-
-    # リストウィンドウはクリップボードリストで利用していますが、クリップボードリストの機能を
-    # Emacsキーバインドを適用していないアプリケーションソフトでも利用できるようにするため、
-    # クリップボードリストで Enter を押下した際の挙動を、次のとおりに切り分けています。
-    #
-    # １）Emacsキーバインドを適用しているアプリケーションソフトからクリップボードリストを起動
-    #     →   Enter（テキストの貼り付け）
-    # ２）Emacsキーバインドを適用していないアプリケーションソフトからクリップボードリストを起動
-    #     → S-Enter（テキストをクリップボードに格納）
-    #
-    # （Emacsキーバインドを適用しないアプリケーションソフトには、キーの入出力の方式が特殊な
-    #   ものが多く指定されているため、テキストの貼り付けがうまく機能しないものがあります。
-    #   このため、アプリケーションソフトにペーストする場合は、そのアプリケーションソフトの
-    #   ペースト操作で行うことを前提とし、上記のとおりの仕様としてます。もし、どうしても
-    #   Enter（テキストの貼り付け）の入力を行いたい場合には、C-m の押下により対応できます。
-    #   なお、C-Enter（引用記号付で貼り付け）の置き換えは、対応が複雑となるため行っておりません。）
-
-    def is_list_window(window):
-        if window.getClassName() == "KeyhacWindowClass" and window.getText() != "Keyhac":
-            return True
-        return False
-
-    keymap_lw = keymap.defineWindowKeymap(check_func=is_list_window)
-
-    # リストウィンドウで検索が開始されると True になる
-    fakeymacs.lw_is_searching = False
-
-    ##################################################
-    ## 文字列検索 / 置換（リストウィンドウ用）
-    ##################################################
-
-    def lw_isearch(direction):
-        if fakeymacs.lw_is_searching:
-            self_insert_command({"backward":"Up", "forward":"Down"}[direction])()
-        else:
-            self_insert_command("f")()
-            fakeymacs.lw_is_searching = True
-
-    def lw_isearch_backward():
-        lw_isearch("backward")
-
-    def lw_isearch_forward():
-        lw_isearch("forward")
-
-    ##################################################
-    ## その他（リストウィンドウ用）
-    ##################################################
-
-    def lw_keyboard_quit():
-        self_insert_command("Esc")()
-
-    ##################################################
-    ## 共通関数（リストウィンドウ用）
-    ##################################################
-
-    def lw_newline():
-        if fakeymacs.keybind == "emacs":
-            self_insert_command("Enter")()
-        else:
-            self_insert_command("S-Enter")()
-
-    def lw_exit_search(func):
-        def _func():
-            if fakeymacs.lw_is_searching:
-                self_insert_command("Enter")()
-            func()
-        return _func
-
-    def lw_reset_search(func):
-        def _func():
-            func()
-            fakeymacs.lw_is_searching = False
-        return _func
-
-    ##################################################
-    ## キーバインド（リストウィンドウ用）
-    ##################################################
-
-    ## Escキーの設定
-    define_key(keymap_lw, "Esc",           lw_reset_search(self_insert_command("Esc")))
-    define_key(keymap_lw, "C-OpenBracket", lw_reset_search(self_insert_command("Esc")))
-
-    ## 「カーソル移動」のキー設定
-    define_key(keymap_lw, "C-b", backward_char)
-    define_key(keymap_lw, "A-b", backward_char)
-
-    define_key(keymap_lw, "C-f", forward_char)
-    define_key(keymap_lw, "A-f", forward_char)
-
-    define_key(keymap_lw, "C-p", previous_line)
-    define_key(keymap_lw, "A-p", previous_line)
-
-    define_key(keymap_lw, "C-n", next_line)
-    define_key(keymap_lw, "A-n", next_line)
-
-    if fc.scroll_key:
-        if fc.scroll_key[0]:
-            define_key(keymap_lw, fc.scroll_key[0].replace("M-", "A-"), scroll_up)
-        if fc.scroll_key[1]:
-            define_key(keymap_lw, fc.scroll_key[1].replace("M-", "A-"), scroll_down)
-
-    ## 「カット / コピー / 削除 / アンドゥ」のキー設定
-    define_key(keymap_lw, "C-h", delete_backward_char)
-    define_key(keymap_lw, "A-h", delete_backward_char)
-
-    define_key(keymap_lw, "C-d", delete_char)
-    define_key(keymap_lw, "A-d", delete_char)
-
-    ## 「文字列検索 / 置換」のキー設定
-    define_key(keymap_lw, "C-r", lw_isearch_backward)
-    define_key(keymap_lw, "A-r", lw_isearch_backward)
-
-    define_key(keymap_lw, "C-s", lw_isearch_forward)
-    define_key(keymap_lw, "A-s", lw_isearch_forward)
-
-    ## 「その他」のキー設定
-    define_key(keymap_lw, "Enter", lw_exit_search(lw_newline))
-    define_key(keymap_lw, "C-m",   lw_exit_search(lw_newline))
-    define_key(keymap_lw, "A-m",   lw_exit_search(lw_newline))
-
-    define_key(keymap_lw, "C-g", lw_reset_search(lw_keyboard_quit))
-    define_key(keymap_lw, "A-g", lw_reset_search(lw_keyboard_quit))
-
-    define_key(keymap_lw, "S-Enter", lw_exit_search(self_insert_command("S-Enter")))
-    define_key(keymap_lw, "C-Enter", lw_exit_search(self_insert_command("C-Enter")))
-    define_key(keymap_lw, "A-Enter", lw_exit_search(self_insert_command("C-Enter")))
-
     # 個人設定ファイルのセクション [section-base-2] を読み込んで実行する
-    exec(read_config_personal("[section-base-2]"), dict(globals(), **locals()))
-
-
-    ####################################################################################################
-    ## クリップボードリストの設定
-    ####################################################################################################
-    if fc.use_clipboardList:
-        # クリップボードリストを利用するための設定です。クリップボードリストは clipboardList_key 変数で
-        # 設定したキーの押下により起動します。クリップボードリストを開いた後、C-f（→）や C-b（←）
-        # キーを入力することで画面を切り替えることができます。
-        # （参考：https://github.com/crftwr/keyhac/blob/master/_config.py）
-
-        # リストウィンドウのフォーマッタを定義する
-        list_formatter = "{:30}"
-
-        # 定型文
-        fc.fixed_items = [
-            ["---------+ x 8", "---------+" * 8],
-            ["メールアドレス", "user_name@domain_name"],
-            ["住所",           "〒999-9999 ＮＮＮＮＮＮＮＮＮＮ"],
-            ["電話番号",       "99-999-9999"],
-        ]
-        fc.fixed_items[0][0] = list_formatter.format(fc.fixed_items[0][0])
-
-        # 日時をペーストする機能
-        def dateAndTime(fmt):
-            def _func():
-                return datetime.datetime.now().strftime(fmt)
-            return _func
-
-        # 日時
-        fc.datetime_items = [
-            ["YYYY/MM/DD HH:MM:SS", dateAndTime("%Y/%m/%d %H:%M:%S")],
-            ["YYYY/MM/DD",          dateAndTime("%Y/%m/%d")],
-            ["HH:MM:SS",            dateAndTime("%H:%M:%S")],
-            ["YYYYMMDD_HHMMSS",     dateAndTime("%Y%m%d_%H%M%S")],
-            ["YYYYMMDD",            dateAndTime("%Y%m%d")],
-            ["HHMMSS",              dateAndTime("%H%M%S")],
-        ]
-        fc.datetime_items[0][0] = list_formatter.format(fc.datetime_items[0][0])
-
-        fc.cblisters = [
-            ["定型文", cblister_FixedPhrase(fc.fixed_items)],
-            ["日時",   cblister_FixedPhrase(fc.datetime_items)],
-        ]
-
-        # 個人設定ファイルのセクション [section-clipboardList-1] を読み込んで実行する
-        exec(read_config_personal("[section-clipboardList-1]"), dict(globals(), **locals()))
-
-        keymap.cblisters = [keymap.cblisters[0]] + fc.cblisters
-
-        def lw_clipboardList():
-            keymap.command_ClipboardList()
-
-        # クリップボードリストを起動する
-        define_key(keymap_global, fc.clipboardList_key, lw_reset_search(reset_search(reset_undo(reset_counter(reset_mark(lw_clipboardList))))))
-
-        # 個人設定ファイルのセクション [section-clipboardList-2] を読み込んで実行する
-        exec(read_config_personal("[section-clipboardList-2]"), dict(globals(), **locals()))
-
-
-    ####################################################################################################
-    ## ランチャーリストの設定
-    ####################################################################################################
-    if fc.use_lancherList:
-        # ランチャー用のリストを利用するための設定です。ランチャーリストは lancherList_key 変数で
-        # 設定したキーの押下により起動します。ランチャーリストを開いた後、C-f（→）や C-b（←）
-        # キーを入力することで画面を切り替えることができます。
-        # （参考：https://github.com/crftwr/keyhac/blob/master/_config.py）
-
-        # リストウィンドウのフォーマッタを定義する
-        list_formatter = "{:30}"
-
-        # アプリケーションソフト
-        fc.application_items = [
-            ["Notepad",     keymap.ShellExecuteCommand(None, r"notepad.exe", "", "")],
-            ["Explorer",    keymap.ShellExecuteCommand(None, r"explorer.exe", "", "")],
-            ["Cmd",         keymap.ShellExecuteCommand(None, r"cmd.exe", "", "")],
-            ["MSEdge",      keymap.ShellExecuteCommand(None, r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe", "", "")],
-            ["Chrome",      keymap.ShellExecuteCommand(None, r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe", "", "")],
-            ["Firefox",     keymap.ShellExecuteCommand(None, r"C:\Program Files (x86)\Mozilla Firefox\firefox.exe", "", "")],
-            ["Thunderbird", keymap.ShellExecuteCommand(None, r"C:\Program Files (x86)\Mozilla Thunderbird\thunderbird.exe", "", "")],
-        ]
-        fc.application_items[0][0] = list_formatter.format(fc.application_items[0][0])
-
-        # ウェブサイト
-        fc.website_items = [
-            ["Google",          keymap.ShellExecuteCommand(None, r"https://www.google.co.jp/", "", "")],
-            ["Facebook",        keymap.ShellExecuteCommand(None, r"https://www.facebook.com/", "", "")],
-            ["Twitter",         keymap.ShellExecuteCommand(None, r"https://twitter.com/", "", "")],
-            ["Keyhac",          keymap.ShellExecuteCommand(None, r"https://sites.google.com/site/craftware/keyhac-ja", "", "")],
-            ["Fakeymacs",       keymap.ShellExecuteCommand(None, r"https://github.com/smzht/fakeymacs", "", "")],
-            ["NTEmacs＠ウィキ", keymap.ShellExecuteCommand(None, r"https://w.atwiki.jp/ntemacs/", "", "")],
-        ]
-        fc.website_items[0][0] = list_formatter.format(fc.website_items[0][0])
-
-        # その他
-        fc.other_items = [
-            ["Edit   config.py", keymap.command_EditConfig],
-            ["Reload config.py", keymap.command_ReloadConfig],
-        ]
-        fc.other_items[0][0] = list_formatter.format(fc.other_items[0][0])
-
-        fc.lclisters = [
-            ["App",     cblister_FixedPhrase(fc.application_items)],
-            ["Website", cblister_FixedPhrase(fc.website_items)],
-            ["Other",   cblister_FixedPhrase(fc.other_items)],
-        ]
-
-        # 個人設定ファイルのセクション [section-lancherList-1] を読み込んで実行する
-        exec(read_config_personal("[section-lancherList-1]"), dict(globals(), **locals()))
-
-        def lw_lancherList():
-            def popLancherList():
-
-                # 既にリストが開いていたら閉じるだけ
-                if keymap.isListWindowOpened():
-                    keymap.cancelListWindow()
-                    return
-
-                # ウィンドウ
-                window_list = getWindowList()
-                window_items = []
-                if window_list:
-                    processName_length = max(map(len, map(Window.getProcessName, window_list)))
-
-                    formatter = "{0:" + str(processName_length) + "} | {1}"
-                    for wnd in window_list:
-                        window_items.append([formatter.format(wnd.getProcessName(), wnd.getText()), popWindow(wnd)])
-
-                window_items.append([list_formatter.format("<Desktop>"), keymap.ShellExecuteCommand(None, r"shell:::{3080F90D-D7AD-11D9-BD98-0000947B0257}", "", "")])
-                listers = [["Window", cblister_FixedPhrase(window_items)]] + fc.lclisters
-
-                try:
-                    select_item = keymap.popListWindow(listers)
-
-                    if not select_item:
-                        Window.find("Progman", None).setForeground()
-                        select_item = keymap.popListWindow(listers)
-
-                    if select_item and select_item[0] and select_item[0][1]:
-                        select_item[0][1]()
-                except:
-                    print("エラーが発生しました")
-
-            # キーフックの中で時間のかかる処理を実行できないので、delayedCall() を使って遅延実行する
-            keymap.delayedCall(popLancherList, 0)
-
-        # ランチャーリストを起動する
-        define_key(keymap_global, fc.lancherList_key, lw_reset_search(reset_search(reset_undo(reset_counter(reset_mark(lw_lancherList))))))
-
-        # 個人設定ファイルのセクション [section-lancherList-2] を読み込んで実行する
-        exec(read_config_personal("[section-lancherList-2]"), dict(globals(), **locals()))
-
-
-    ####################################################################################################
-    ## C-Enter に F2（編集モード移行）を割り当てる（オプション）
-    ####################################################################################################
-    if fc.use_edit_mode:
-        fc.edit_mode_target = [["EXCEL.EXE",    "EXCEL*"],
-                               ["explorer.exe", "DirectUIHWND"]]
-
-        # 個人設定ファイルのセクション [section-edit_mode-1] を読み込んで実行する
-        exec(read_config_personal("[section-edit_mode-1]"), dict(globals(), **locals()))
-
-        def is_edit_mode_target(window):
-            for processName, className in fc.edit_mode_target:
-                if checkWindow(processName, className, window):
-                    return True
-            return False
-
-        keymap_edit_mode = keymap.defineWindowKeymap(check_func=is_edit_mode_target)
-
-        define_key(keymap_edit_mode, "C-Enter", reset_search(reset_undo(reset_counter(reset_mark(self_insert_command("F2"))))))
-
-        # 個人設定ファイルのセクション [section-edit_mode-2] を読み込んで実行する
-        exec(read_config_personal("[section-edit_mode-2]"), dict(globals(), **locals()))
-
-
-    ####################################################################################################
-    ## Emacs の場合、IME 切り替え用のキーを C-\ に置き換える（オプション）
-    ####################################################################################################
-    if fc.use_real_emacs:
-        # Emacs で mozc を利用する際に Windows の IME の切換えキーを mozc の切り替えキーとして
-        # 機能させるための設定です。初期設定では NTEmacs（gnupack 含む）と Windows の Xサーバで動く
-        # Emacs を指定しています。
-
-        fc.x_window_apps = ["XWin.exe",          # Cygwin/X
-                            "XWin_MobaX.exe",    # MobaXterm/X
-                            "Xming.exe",         # Xming
-                            "vcxsrv.exe",        # VcXsrv
-                            "Xpra-Launcher.exe", # Xpra
-                           ]
-
-        # 個人設定ファイルのセクション [section-real_emacs-1] を読み込んで実行する
-        exec(read_config_personal("[section-real_emacs-1]"), dict(globals(), **locals()))
-
-        def is_real_emacs(window):
-            if (window.getClassName() == "Emacs" or
-                (window.getProcessName() in fc.x_window_apps and
-                 # ウィンドウのタイトルを検索する正規表現を指定する
-                 # Emacs を起動しているウィンドウを検索できるように、Emacs の frame-title-format 変数を
-                 # 次のように設定するなどして、識別できるようにする
-                 # (setq frame-title-format (format "emacs-%s - %%b" emacs-version))
-                 re.search(r"^emacs-", window.getText()))):
-                return True
-            return False
-
-        keymap_real_emacs = keymap.defineWindowKeymap(check_func=is_real_emacs)
-
-        # IME 切り替え用のキーの置き換え
-        # （Emacs 側での C-F1 と C-F2 の設定については、次のページを参照してください。
-        #   https://w.atwiki.jp/ntemacs/pages/48.html ）
-        keymap_real_emacs["(243)"]  = keymap.InputKeyCommand("C-Yen") # [半角／全角] キー
-        keymap_real_emacs["(244)"]  = keymap.InputKeyCommand("C-Yen") # [半角／全角] キー
-        keymap_real_emacs["A-(25)"] = keymap.InputKeyCommand("C-Yen") # Alt-` キー
-
-        keymap_real_emacs["(29)"]   = keymap.InputKeyCommand("C-F1")  # [無変換] キー
-        keymap_real_emacs["(28)"]   = keymap.InputKeyCommand("C-F2")  # [変換] キー
-        # keymap_real_emacs["O-LAlt"] = keymap.InputKeyCommand("C-F1")  # 左 Alt キーの単押し
-        # keymap_real_emacs["O-RAlt"] = keymap.InputKeyCommand("C-F2")  # 右 Alt キーの単押し
-
-        # 個人設定ファイルのセクション [section-real_emacs-2] を読み込んで実行する
-        exec(read_config_personal("[section-real_emacs-2]"), dict(globals(), **locals()))
-
-
-    ####################################################################################################
-    ## 英語キーボード設定をした OS 上で、日本語キーボードを利用する場合の切り替えを行う（オプション）
-    ####################################################################################################
-    if fc.use_change_keyboard:
-        # https://w.atwiki.jp/ntemacs/pages/90.html
-
-        # OS の設定を英語キーボードにして日本語キーボードを利用する場合のお勧め設定
-        # （予め、Change Key を使って、[￥] キーにスキャンコード 0x7F を割り当ててください）
-
-        keymap.replaceKey(235, 29)               # [無変換] キーを OS が認識可能なキーにする
-        keymap.replaceKey(255, 28)               # [変換] キーを OS が認識可能なキーにする
-        keymap.replaceKey(193, "RShift")         # [＼] キーを RShift キーにする
-        keymap.replaceKey(236, "BackSlash")      # [￥] キーを BackSlash キーにする
-        keymap.replaceKey("BackSlash", "Return") # [ ]] キーを Enter キーにする
-
-        # 個人設定ファイルのセクション [section-change_keyboard-1] を読み込んで実行する
-        exec(read_config_personal("[section-change_keyboard-1]"), dict(globals(), **locals()))
-
-        # リモートデスクトップで接続する場合など、一つの OS を英語キーボードと日本語キーボード
-        # とで混在して利用する場合の切り替えの設定
-
-        def change_keyboard():
-            if fakeymacs.keyboard_status == "US":
-                # 日本語キーボードの利用に切り替える
-
-                # 日本語キーボードの [ ]] キーを Enter キーにする
-                keymap.replaceKey("BackSlash", "Return")
-
-                keymap.popBalloon("keyboard", "[JP Keyboard]", 1000)
-                fakeymacs.keyboard_status = "JP"
-
-            else:
-                # 英語キーボードの利用に切り替える
-
-                # 日本語キーボードの [ ]] キーを元の設定に戻す
-                keymap.replaceKey("BackSlash", "BackSlash")
-
-                if fakeymacs.keyboard_status == "JP":
-                    keymap.popBalloon("keyboard", "[US Keyboard]", 1000)
-                fakeymacs.keyboard_status = "US"
-
-        fakeymacs.keyboard_status = None
-        change_keyboard()
-
-        define_key(keymap_global, "C-S-c", change_keyboard)
-
-        # 個人設定ファイルのセクション [section-change_keyboard-2] を読み込んで実行する
-        exec(read_config_personal("[section-change_keyboard-2]"), dict(globals(), **locals()))
+    exec(read_config_personal("[section-base-2]"))
